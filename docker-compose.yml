@@ -1,0 +1,30 @@
+version: '2'
+services:
+    nginx:
+        image: nginx
+        container_name: 'nginx'
+        ports:
+            - '80:80'
+        volumes:
+            - ./nginx/conf.d:/etc/nginx/conf.d:ro
+            - ./nginx/www:/var/www:ro
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        links:
+            - 'nodeapp'
+    nodeapp:
+        build: .
+        container_name: 'nodeapp'
+        links:
+            - mongo
+            - redis
+    mongo:
+        image: mongo:latest
+        container_name: 'mongo'
+        volumes:
+            - ./data/mongodb:/data/db
+    redis:
+        image: redis:latest
+        container_name: 'redis'
+        volumes:
+            - ./data/redis:/data
+        command: redis-server --appendonly yes
